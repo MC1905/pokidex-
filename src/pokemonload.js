@@ -1,79 +1,64 @@
-
-
-// import logo from "./logo.svg";
+import React, { useState, useEffect } from "react";
 import "./App.css";
 
-import { useEffect, useState } from "react";
-import { Routes, Route } from "react-router-dom";
-// import PokemonOverview from "pokemondetail"
-import PokeDetail from "./pokemondetails";
-import Pokemon from "./pokemon";
-// import PokemonDetails from "pokemondetails"
-
-
-
-function Pokemons({name, url}) {
-  var [pokemons, SetPokemons] = useState({});
-  var [loading, SetLoading] = useState({});
+function PokeDetail({ match }) {
+  const [pokemonDetail, setPokemonDetail] = useState([]);
 
   useEffect(() => {
-    fetch(url)
-    .then((Response) => Response.json())
-    .then((data) => {
-      SetPokemons(data)
-      SetLoading(false)});
-  }, );
+    fetchName();
+    // console.log(match);
+  },);
 
-  if (loading) {
-    return (
-      <div> Aan het laden...</div>
-    );
-  }
-
-  return (
-    <div>
-      <h2>{name}</h2>
-      <img src={pokemons.sprites.front_default} alt="" />
-    </div>
-  )
-}
-
-function PokemonLoad() {
-  var [pokemons, SetPokemons] = useState({});
-  var [loading, SetLoading] = useState({});
-
-  
-  <Routes>
-    <Route path="/" element={    <Pokemon />} />
-    <Route path="/about" element={<div>About pokedex!</div>} />
-    <Route path="/pokemon/:id" element={<PokeDetail />} />
-  </Routes>
-  
-
-
-  useEffect(() => {
-    fetch("https://pokeapi.co/api/v2/pokemon")
-    .then((Response) => Response.json())
-    .then((data) => {
-      SetPokemons(data)
-      SetLoading(false)});
-  }, []);
-
-  if (loading) {
-    return (
-      <div> Aan het laden...</div>
-    );
-  }
+  const fetchName = () => {
+    fetch(`https://pokeapi.co/api/v2/pokemon/${match.params.pokemon}`)
+      .then(response => response.json())
+      // .then(detail => console.log(detail));
+      .then(detail => setPokemonDetail(detail));
+  };
 
   return (
     <div className="App">
-        {pokemons.results.map(pokemon => {
-          return(
-            <Pokemons name={pokemon.name} url={pokemon.url} />
-          );
-        })}
+      <div className="pokedex">
+        <img
+          src="http://pngimg.com/uploads/pokeball/pokeball_PNG8.png"
+          alt=""
+          width="60px"
+          height="60px"
+        />
+        <h2>POKEDEX</h2>
+      </div>
+      <div>
+        <img
+          className=" detail-img tc dib pa1 ma2 "
+          src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${
+            match.params.pokemon
+          }.png`}
+          alt=""
+          width="200px"
+          height="200px"
+        />
+      </div>
+      <div className="details dib">
+        ID: {pokemonDetail.id}
+        <br />
+        <br />
+        name: {pokemonDetail.name}
+        <br />
+        <br />
+        height: {pokemonDetail.height}
+        <br />
+        <br />
+        weight: {pokemonDetail.weight}
+        <br />
+        <br />
+        type: {pokemonDetail.types && pokemonDetail.types[0].type.name}
+        <br />
+        <br />
+        abilities:{" "}
+        {pokemonDetail.abilities && pokemonDetail.abilities[0].ability.name}
+      </div>
     </div>
   );
 }
 
-export default PokemonLoad;
+export default PokeDetail;
