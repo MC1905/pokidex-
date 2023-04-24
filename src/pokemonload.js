@@ -1,64 +1,68 @@
-import React, { useState, useEffect } from "react";
-import "./App.css";
+import { useEffect, useState } from "react";
+import { Routes, Route, Link } from "react-router-dom";
+import PokeDetail from "./pokemondetails";
+import Pokemon from "./pokemon";
 
-function PokeDetail({ match }) {
-  const [pokemonDetail, setPokemonDetail] = useState([]);
+function Pokemons({ name, url }) {
+  var [pokemonData, setPokemonData] = useState({});
+  var [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchName();
-    // console.log(match);
-  },);
+    fetch(url)
+      .then((response) => response.json())
+      .then((data) => {
+        setPokemonData(data);
+        setLoading(false);
+      });
+  }, [url]);
 
-  const fetchName = () => {
-    fetch(`https://pokeapi.co/api/v2/pokemon/${match.params.pokemon}`)
-      .then(response => response.json())
-      // .then(detail => console.log(detail));
-      .then(detail => setPokemonDetail(detail));
-  };
+  if (loading) {
+    return <div> Aan het laden...</div>;
+  }
 
   return (
-    <div className="App">
-      <div className="pokedex">
-        <img
-          src="http://pngimg.com/uploads/pokeball/pokeball_PNG8.png"
-          alt=""
-          width="60px"
-          height="60px"
-        />
-        <h2>POKEDEX</h2>
-      </div>
-      <div>
-        <img
-          className=" detail-img tc dib pa1 ma2 "
-          src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${
-            match.params.pokemon
-          }.png`}
-          alt=""
-          width="200px"
-          height="200px"
-        />
-      </div>
-      <div className="details dib">
-        ID: {pokemonDetail.id}
-        <br />
-        <br />
-        name: {pokemonDetail.name}
-        <br />
-        <br />
-        height: {pokemonDetail.height}
-        <br />
-        <br />
-        weight: {pokemonDetail.weight}
-        <br />
-        <br />
-        type: {pokemonDetail.types && pokemonDetail.types[0].type.name}
-        <br />
-        <br />
-        abilities:{" "}
-        {pokemonDetail.abilities && pokemonDetail.abilities[0].ability.name}
-      </div>
+    <div>
+      <Link to={`/pokemon/${pokemonData.name}`} state={{data: pokemonData}}>
+        <h2>{name}</h2>
+        <img src={pokemonData.sprites.front_default} alt="" />
+      </Link>
     </div>
   );
 }
 
-export default PokeDetail;
+function PokemonLoad() {
+  var [pokemons, setPokemons] = useState({});
+  var [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch("https://pokeapi.co/api/v2/pokemon")
+      .then((response) => response.json())
+      .then((data) => {
+        setPokemons(data);
+        setLoading(false);
+      });
+  }, []);
+
+  if (loading) {
+    return <div> Aan het laden...</div>;
+  }
+
+  return (
+    <div className="App">
+      {pokemons.results.map((pokemon) => {
+        return <Pokemons key={pokemon.name} name={pokemon.name} url={pokemon.url} />;
+      })}
+    </div>
+  );
+}
+
+// function App() {
+//   return (
+//     <Routes>
+//       <Route path="/" element={<PokemonLoad />} />
+//       <Route path="/pokemonload/*" element={<PokeDetail />} />
+//     </Routes>
+//   );
+// }
+
+export default PokemonLoad;

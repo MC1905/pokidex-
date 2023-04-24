@@ -6,6 +6,7 @@ import { Routes, Route, Link} from "react-router-dom";
 // import PokeDetail from "./pokemondetails";
 // import Pokemon from "./pokemon";
 import PokemonLoad from "./pokemonload";
+import PokeDetail from "./pokemondetails";
 
 
 
@@ -27,7 +28,8 @@ function App() {
     </ul>{' '}
   </nav>
   <Routes>
-    <Route exact path='/pokemonload' element={<PokemonLoad />} />
+    <Route exact path='/' element={<PokemonLoad />} />
+    <Route path="/pokemon/*" element={<PokeDetail />} />
   </Routes>
 
 </div>
